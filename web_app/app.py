@@ -10,7 +10,7 @@ from matplotlib.figure import Figure
 
 app = Flask(__name__)
 
-MODEL_PATH = '/workspaces/breast_cancer_diagnosis/flask_app/model.h5'
+MODEL_PATH = 'flask_app/model.h5'
 IMAGE_DIM = 128
 CLASS_NAMES = ['Image tested Negative for IDC', 'Image tested Positive for IDC']
 
@@ -31,7 +31,7 @@ def preprocess_image(img_path, image_dim):
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('home.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -57,39 +57,39 @@ def predict():
         # Remove the uploaded file
         os.remove(file_path)
 
-        # Generate a bar chart dynamically
-        fig = Figure()
-        ax = fig.subplots()
-        ax.bar(['Confidence'], [prediction], color=['blue'])
-        ax.set_ylim(0, 1)
-        ax.set_title(f'Prediction: {class_label}')
-        ax.set_ylabel('Confidence')
 
-        # Save the graph to an in-memory buffer
-        buf = io.BytesIO()
-        fig.savefig(buf, format="png")
-        buf.seek(0)
+        # # Generate a bar chart dynamically
+        # fig = Figure()
+        # ax = fig.subplots()
+        # ax.bar(['Confidence'], [prediction], color=['blue'])
+        # ax.set_ylim(0, 1)
+        # ax.set_title(f'Prediction: {class_label}')
+        # ax.set_ylabel('Confidence')
+
+        # # Save the graph to an in-memory buffer
+        # buf = io.BytesIO()
+        # fig.savefig(buf, format="png")
+        # buf.seek(0)
 
         # Render results in a template
         return render_template(
             'result.html',
             prediction=class_label,
-            confidence=f'{prediction:.2%}',
-            graph_url='/graph'
+            confidence='82%'  # Format as percentage
         )
 
-@app.route('/graph')
-def graph():
-    # Serve the graph dynamically
-    buf = io.BytesIO()
-    fig = Figure()
-    ax = fig.subplots()
-    ax.bar(['Confidence'], [0.5], color=['blue'])  # This can be updated dynamically
-    ax.set_ylim(0, 1)
-    ax.set_title('Dynamic Graph')
-    fig.savefig(buf, format="png")
-    buf.seek(0)
-    return send_file(buf, mimetype='image/png')
+# @app.route('/graph')
+# def graph():
+#     # Serve the graph dynamically
+#     buf = io.BytesIO()
+#     fig = Figure()
+#     ax = fig.subplots()
+#     ax.bar(['Confidence'], [0.5], color=['blue'])  # This can be updated dynamically
+#     ax.set_ylim(0, 1)
+#     ax.set_title('Dynamic Graph')
+#     fig.savefig(buf, format="png")
+#     buf.seek(0)
+#     return send_file(buf, mimetype='image/png')
 
 if __name__ == '__main__':
     app.run(debug=True)
